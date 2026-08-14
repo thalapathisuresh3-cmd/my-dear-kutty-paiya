@@ -6,6 +6,127 @@
 <title>Sweet Moments ❤️</title>
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
+<style>
+#cards{
+    position:relative;
+    width:100%;
+    max-width:380px;
+    height:480px;
+    margin:auto;
+}
+
+.photo-group{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    display:none;
+}
+
+.photo-group.active{
+    display:block;
+}
+
+.g-photo{
+    position:absolute;
+    background:white;
+    padding:8px 8px 25px 8px;
+    border-radius:6px;
+    box-shadow:0 15px 30px rgba(0,0,0,.4);
+    transition:.4s;
+}
+
+.g-photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:block;
+    border-radius:2px;
+}
+
+.g-photo:hover{
+    transform:scale(1.05) !important;
+    z-index:10;
+}
+
+/* Collage positions - 3 photos scattered like polaroids */
+.g-photo.p1{
+    width:210px;
+    height:230px;
+    top:0;
+    left:10px;
+    transform:rotate(-8deg);
+    z-index:3;
+}
+
+.g-photo.p2{
+    width:200px;
+    height:220px;
+    top:130px;
+    right:5px;
+    transform:rotate(7deg);
+    z-index:2;
+}
+
+.g-photo.p3{
+    width:215px;
+    height:235px;
+    bottom:0;
+    left:35px;
+    transform:rotate(-4deg);
+    z-index:1;
+}
+
+@media(max-width:768px){
+    #cards{
+        max-width:300px;
+        height:420px;
+    }
+    .g-photo.p1{
+        width:170px;
+        height:185px;
+        left:0;
+    }
+    .g-photo.p2{
+        width:160px;
+        height:175px;
+        top:115px;
+        right:0;
+    }
+    .g-photo.p3{
+        width:175px;
+        height:190px;
+        bottom:0;
+        left:25px;
+    }
+}
+
+#progressDots{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:25px;
+    flex-wrap:wrap;
+    max-width:280px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:rgba(255,255,255,.4);
+    transition:.3s;
+}
+
+.dot.active{
+    background:#ff2f70;
+    width:22px;
+    border-radius:10px;
+}
+</style>
 </head>
 <body class="memory-page">
 <div class="memory-container">
@@ -17,38 +138,63 @@ Swipe the cards →
 </p>
 <div id="cards">
 </div>
+<div id="progressDots"></div>
 <p id="swipeText">
 Swipe this photo →
 </p>
 </div>
 <script>
-/* Build 39 cards automatically (photo1.jpg to photo39.jpg) */
 const cardsContainer = document.getElementById("cards");
+const dotsContainer = document.getElementById("progressDots");
 const totalPhotos = 39;
-for(let i = 1; i <= totalPhotos; i++){
-    let card = document.createElement("div");
-    card.className = "photo-card";
-    let img = document.createElement("img");
-    img.src = "images/photo" + i + ".jpg";
-    card.appendChild(img);
-    cardsContainer.appendChild(card);
+const perSwipe = 3;
+const totalGroups = Math.ceil(totalPhotos / perSwipe);
+
+/* Build groups of 3 photos each, styled as a collage */
+for(let g = 0; g < totalGroups; g++){
+    let group = document.createElement("div");
+    group.className = "photo-group";
+
+    for(let p = 1; p <= perSwipe; p++){
+        let photoNum = (g * perSwipe) + p;
+        if(photoNum > totalPhotos) break;
+
+        let photoDiv = document.createElement("div");
+        photoDiv.className = "g-photo p" + p;
+
+        let img = document.createElement("img");
+        img.src = "images/photo" + photoNum + ".jpg";
+        img.alt = "Memory " + photoNum;
+
+        photoDiv.appendChild(img);
+        group.appendChild(photoDiv);
+    }
+
+    cardsContainer.appendChild(group);
+
+    let dot = document.createElement("div");
+    dot.className = "dot";
+    dotsContainer.appendChild(dot);
 }
 
-const cards = document.querySelectorAll(".photo-card");
+const groups = document.querySelectorAll(".photo-group");
+const dots = document.querySelectorAll(".dot");
 let current = 0;
-const perSwipe = 3;
 
-function showCard(){
-    cards.forEach((card, index) => {
-        card.style.display = (index >= current && index < current + perSwipe) ? "block" : "none";
+function showGroup(){
+    groups.forEach((group, index) => {
+        group.classList.toggle("active", index === current);
+    });
+    dots.forEach((dot, index) => {
+        dot.classList.toggle("active", index === current);
     });
 }
-showCard();
+showGroup();
 
 function goNext(){
-    current += perSwipe;
-    if(current < cards.length){
-        showCard();
+    current++;
+    if(current < groups.length){
+        showGroup();
     } else {
         window.location.href = "letter.html";
     }
