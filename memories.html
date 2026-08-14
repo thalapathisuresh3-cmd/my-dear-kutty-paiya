@@ -7,12 +7,34 @@
 <link rel="stylesheet" href="css/style.css">
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
 <style>
+body.memory-page{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:32px 16px;
+}
+
+.memory-container{
+    width:100%;
+    max-width:420px;
+    text-align:center;
+}
+
+.memory-title{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    color:var(--gold);
+    font-size:32px;
+    margin:0 0 6px;
+}
+
 #cards{
     position:relative;
     width:100%;
     max-width:380px;
     height:480px;
-    margin:auto;
+    margin:18px auto 0;
 }
 
 .photo-group{
@@ -78,6 +100,43 @@
     z-index:1;
 }
 
+#swipeText{
+    margin-top:16px;
+    font-size:13px;
+    color:var(--lavender);
+    animation:pulseSwipeHint 1.6s ease-in-out infinite;
+}
+
+@keyframes pulseSwipeHint{
+    0%,100%{transform:translateX(0);}
+    50%{transform:translateX(6px);}
+}
+
+#progressDots{
+    display:flex;
+    justify-content:center;
+    gap:6px;
+    margin-top:20px;
+    flex-wrap:wrap;
+    max-width:280px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:rgba(255,255,255,.4);
+    transition:.3s;
+}
+
+.dot.active{
+    background:#ff2f70;
+    width:22px;
+    border-radius:10px;
+}
+
 @media(max-width:768px){
     #cards{
         max-width:300px;
@@ -102,29 +161,31 @@
     }
 }
 
-#progressDots{
-    display:flex;
-    justify-content:center;
-    gap:6px;
-    margin-top:25px;
-    flex-wrap:wrap;
-    max-width:280px;
-    margin-left:auto;
-    margin-right:auto;
-}
-
-.dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:rgba(255,255,255,.4);
-    transition:.3s;
-}
-
-.dot.active{
-    background:#ff2f70;
-    width:22px;
-    border-radius:10px;
+@media(max-width:380px){
+    .memory-title{
+        font-size:26px;
+    }
+    #cards{
+        max-width:260px;
+        height:380px;
+    }
+    .g-photo.p1{
+        width:150px;
+        height:165px;
+        left:0;
+    }
+    .g-photo.p2{
+        width:140px;
+        height:155px;
+        top:105px;
+        right:0;
+    }
+    .g-photo.p3{
+        width:155px;
+        height:170px;
+        bottom:0;
+        left:20px;
+    }
 }
 </style>
 </head>
@@ -133,19 +194,17 @@
 <h1 class="memory-title">
 Some Sweet Moments ❤️
 </h1>
-<p class="memory-subtitle">
-Swipe the cards →
-</p>
 <div id="cards">
 </div>
-<div id="progressDots"></div>
 <p id="swipeText">
 Swipe this photo →
 </p>
+<div id="progressDots"></div>
 </div>
 <script>
 const cardsContainer = document.getElementById("cards");
 const dotsContainer = document.getElementById("progressDots");
+const swipeText = document.getElementById("swipeText");
 const totalPhotos = 39;
 const perSwipe = 3;
 const totalGroups = Math.ceil(totalPhotos / perSwipe);
@@ -165,6 +224,8 @@ for(let g = 0; g < totalGroups; g++){
         let img = document.createElement("img");
         img.src = "images/photo" + photoNum + ".jpg";
         img.alt = "Memory " + photoNum;
+        img.loading = "lazy";
+        img.decoding = "async";
 
         photoDiv.appendChild(img);
         group.appendChild(photoDiv);
@@ -188,6 +249,7 @@ function showGroup(){
     dots.forEach((dot, index) => {
         dot.classList.toggle("active", index === current);
     });
+    swipeText.style.display = current === 0 ? "block" : "none";
 }
 showGroup();
 
