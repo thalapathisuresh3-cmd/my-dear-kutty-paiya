@@ -218,6 +218,13 @@ img.ph{
 .balloon.yellow{background:linear-gradient(135deg,var(--gold),#e0a83e);}
 .balloon.pink{background:linear-gradient(135deg,#f6a6ff,#b25ce0);}
 .balloon:hover{transform:scale(1.05);}
+.balloon span{
+  opacity:0;
+  transition:opacity .2s ease;
+}
+.balloon.popped span{
+  opacity:1;
+}
 .balloon.popped{
   animation:pop .35s ease forwards;
   pointer-events:none;
